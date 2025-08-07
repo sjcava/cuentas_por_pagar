@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Cuentas por Pagar - Locatel (Agosto 2025)</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FED519 0%, #F79617 50%, #419E46 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 0;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 10px 10px 0 0;
+            color: #333;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #7CC141, #419E46);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #F79617;
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-card h3 {
+            color: #F79617;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-card .value {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #419E46;
+            margin-bottom: 5px;
+        }
+
+        .metric-card .change {
+            font-size: 0.9em;
+            color: #7CC141;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .chart-title {
+            font-size: 1.4em;
+            color: #419E46;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .alert-section {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #F79617;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .alert-title {
+            color: #F79617;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert-title::before {
+            content: "💰";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .alert-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #F79617;
+            color: #333;
+        }
+
+        .supplier-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .supplier-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        .supplier-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .supplier-name {
+            font-weight: 600;
+            color: #419E46;
+            flex: 1;
+        }
+
+        .supplier-amount {
+            font-weight: bold;
+            color: #F79617;
+            font-size: 1.1em;
+        }
+
+        .priority-high { border-left-color: #dc3545; }
+        .priority-medium { border-left-color: #F79617; }
+        .priority-low { border-left-color: #7CC141; }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+
+        .update-info {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 1px solid #2196f3;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .update-info strong {
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💰 Dashboard Cuentas por Pagar</h1>
+        <p>Sistema de Gestión de Proveedores - Locatel</p>
+    </div>
+
+    <div class="container">
+        <div class="update-info">
+            <strong>🔄 Última actualización:</strong> 7 de Agosto 2025 |
+            <strong>📊 Datos procesados:</strong> 788 facturas de 231 proveedores activos
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('overview')">📊 Resumen</button>
+            <button class="nav-tab" onclick="showTab('aging')">📅 Vencimientos</button>
+            <button class="nav-tab" onclick="showTab('suppliers')">🏢 Top Proveedores</button>
+            <button class="nav-tab" onclick="showTab('trends')">📈 Tendencias</button>
+            <button class="nav-tab" onclick="showTab('priority')">⚡ Gestión de Prioridades</button>
+        </div>
+
+        <!-- TAB: RESUMEN -->
+        <div id="overview" class="tab-content active">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Total Facturas</h3>
+                    <div class="value">788</div>
+                    <div class="change">Facturas por pagar</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Monto Total</h3>
+                    <div class="value">$189,188</div>
+                    <div class="change">Total por pagar</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Proveedores Activos</h3>
+                    <div class="value">231</div>
+                    <div class="change">Proveedores únicos</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Promedio por Factura</h3>
+                    <div class="value">$240.09</div>
+                    <div class="change">Monto promedio</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Días Promedio Crédito</h3>
+                    <div class="value">12.7</div>
+                    <div class="change">Días de crédito</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Facturas Vencidas</h3>
+                    <div class="value">668</div>
+                    <div class="change">84.8% del total</div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="chart-container">
+                    <div class="chart-title">Distribución por Vencimiento</div>
+                    <div id="aging-pie-chart"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Top 5 Proveedores</div>
+                    <div id="top-suppliers-chart"></div>
+                </div>
+            </div>
+
+            <div class="alert-section">
+                <div class="alert-title">Alertas Críticas de Pagos</div>
+                <div class="alert-item">
+                    <strong>668 facturas vencidas</strong> por un total de <strong>$151,018.30</strong> requieren atención inmediata
+                </div>
+                <div class="alert-item">
+                    <strong>68 facturas</strong> vencen en los próximos 7 días por <strong>$19,133.84</strong>
+                </div>
+                <div class="alert-item">
+                    <strong>Top 5 proveedores</strong> concentran el 27.4% del total por pagar ($51,691.85)
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: VENCIMIENTOS -->
+        <div id="aging" class="tab-content">
+            <div class="metrics-grid">
+                <div class="metric-card priority-high">
+                    <h3>Vencidas (Más de 30 días)</h3>
+                    <div class="value">$51,948</div>
+                    <div class="change">269 facturas (27.5%)</div>
+                </div>
+                <div class="metric-card priority-high">
+                    <h3>Vencidas (1-30 días)</h3>
+                    <div class="value">$99,071</div>
+                    <div class="change">399 facturas (52.4%)</div>
+                </div>
+                <div class="metric-card priority-medium">
+                    <h3>Por Vencer (0-7 días)</h3>
+                    <div class="value">$19,134</div>
+                    <div class="change">68 facturas (10.1%)</div>
+                </div>
+                <div class="metric-card priority-low">
+                    <h3>Próximo Vencimiento (8-30 días)</h3>
+                    <div class="value">$18,720</div>
+                    <div class="change">51 facturas (9.9%)</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Análisis Detallado por Período de Vencimiento</div>
+                <div id="aging-detail-chart"></div>
+            </div>
+
+            <div class="alert-section">
+                <div class="alert-title">Situación Crítica de Vencimientos</div>
+                <div class="alert-item">
+                    <strong>Atención Urgente:</strong> 84.8% de las facturas están vencidas ($151,018.30)
+                </div>
+                <div class="alert-item">
+                    <strong>Riesgo de Penalizaciones:</strong> 269 facturas con más de 30 días de atraso
+                </div>
+                <div class="alert-item">
+                    <strong>Acción Inmediata:</strong> Priorizar pagos de facturas vencidas para mantener relaciones comerciales
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: TOP PROVEEDORES -->
+        <div id="suppliers" class="tab-content">
+            <div class="chart-container">
+                <div class="chart-title">Top 10 Proveedores por Monto Pendiente</div>
+                <div class="supplier-list">
+                    <div class="supplier-item">
+                        <div class="supplier-name">1. MEGALABS VZL, C.A.</div>
+                        <div class="supplier-amount">$9,985.84</div>
+                    </div>
+                    <div class="supplier-item">
+                        <div class="supplier-name">2. ADIUM LABORATORIOS, C.A.</div>
+                        <div class="supplier-amount">$9,162.73</div>
+                    </div>
+                    <div class="supplier-item">
+                        <div class="supplier-name">3. LABORATORIOS SIEGFRIED S.A</div>
+                        <div class="supplier-amount">$8,083.37</div>
+                    </div>
+                    <div class="supplier-item">
+                        <div class="supplier-name">4. CALOX INTERNATIONAL, C.A.</div>
+                        <div class="supplier-amount">$7,236.43</div>
+                    </div>
+                    <div class="supplier-item">
+                        <div class="supplier-name">5. ASPEN REPRESENTACIONES, C.A.</div>
+                        <div class="supplier-amount">$6,223.57</div>
+                    </div>
+                    <div class="supplier-item">
+                        <div class="supplier-name">6. GALAXIA MEDICA, C.A.</div>
+                        <div class="supplier-amount">$5,983.91</div>
+                    </div>
+                    <div class="supplier-item">
+                        <div class="supplier-name">7. AVPHARMA, C.A.</div>
+                        <div class="supplier-amount">$5,825.55</div>
+                    </div>
+                    <div class="supplier-item">
+                        <div class="supplier-name">8. NESTLE VENEZUELA, S.A.</div>
+                        <div class="supplier-amount">$4,673.51</div>
+                    </div>
+                    <div class="supplier-item">
+                        <div class="supplier-name">9. DROGUERIA NENA, C.A.</div>
+                        <div class="supplier-amount">$4,519.22</div>
+                    </div>
+                    <div class="supplier-item">
+                        <div class="supplier-name">10. LABORATORIOS FARMA S.A</div>
+                        <div class="supplier-amount">$3,955.27</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="chart-container">
+                    <div class="chart-title">Distribución por Proveedor</div>
+                    <div id="supplier-distribution-chart"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Concentración de Pagos</div>
+                    <div id="payment-concentration-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: TENDENCIAS -->
+        <div id="trends" class="tab-content">
+            <div class="chart-container">
+                <div class="chart-title">Distribución Mensual de Vencimientos</div>
+                <div id="monthly-trend-chart"></div>
+            </div>
+
+            <div class="two-column">
+                <div class="chart-container">
+                    <div class="chart-title">Evolución de Facturas por Mes</div>
+                    <div id="monthly-invoices-chart"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Promedio de Días de Crédito</div>
+                    <div id="credit-days-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: GESTIÓN DE PRIORIDADES -->
+        <div id="priority" class="tab-content">
+            <div class="metrics-grid">
+                <div class="metric-card priority-high">
+                    <h3>Prioridad Alta</h3>
+                    <div class="value">$152,180</div>
+                    <div class="change">669 facturas</div>
+                </div>
+                <div class="metric-card priority-medium">
+                    <h3>Prioridad Media</h3>
+                    <div class="value">$36,692</div>
+                    <div class="change">118 facturas</div>
+                </div>
+                <div class="metric-card priority-low">
+                    <h3>Prioridad Baja</h3>
+                    <div class="value">$316</div>
+                    <div class="change">1 factura</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Matriz de Prioridades de Pago</div>
+                <div id="priority-matrix-chart"></div>
+            </div>
+
+            <div class="alert-section">
+                <div class="alert-title">Plan de Acción Recomendado</div>
+                <div class="alert-item">
+                    <strong>Prioridad 1:</strong> Procesar inmediatamente 669 facturas de alta prioridad ($152,180) - Incluye todas las vencidas
+                </div>
+                <div class="alert-item">
+                    <strong>Prioridad 2:</strong> Programar pagos de 118 facturas de prioridad media ($36,692) en los próximos 15 días
+                </div>
+                <div class="alert-item">
+                    <strong>Negociación:</strong> Contactar a los top 10 proveedores para renegociar términos y evitar penalizaciones
+                </div>
+                <div class="alert-item">
+                    <strong>Flujo de Caja:</strong> Revisar disponibilidad de fondos para cubrir $152,180 en pagos urgentes
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para cambiar tabs
+        function showTab(tabName) {
+            // Ocultar todos los tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Remover clase active de todos los botones
+            const buttons = document.querySelectorAll('.nav-tab');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Mostrar el tab seleccionado
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Renderizar gráficos según el tab
+            setTimeout(() => {
+                switch(tabName) {
+                    case 'overview':
+                        renderOverviewCharts();
+                        break;
+                    case 'aging':
+                        renderAgingCharts();
+                        break;
+                    case 'suppliers':
+                        renderSupplierCharts();
+                        break;
+                    case 'trends':
+                        renderTrendCharts();
+                        break;
+                    case 'priority':
+                        renderPriorityCharts();
+                        break;
+                }
+            }, 100);
+        }
+
+        // Colores de Locatel
+        const locatelColors = ['#FED519', '#F79617', '#7CC141', '#419E46', '#0A9561'];
+
+        // Gráficos del Overview
+        function renderOverviewCharts() {
+            // Gráfico de torta - Vencimientos
+            const agingData = [{
+                values: [51947.56, 99070.74, 19133.84, 18719.91, 315.55],
+                labels: ['Vencidas (+30 días)', 'Vencidas (1-30 días)', 'Por vencer (0-7 días)', 'Próximo vencimiento (8-30 días)', 'Largo plazo (31+ días)'],
+                type: 'pie',
+                marker: {
+                    colors: ['#dc3545', '#ff6b6b', '#F79617', '#7CC141', '#419E46']
+                },
+                textinfo: 'label+percent',
+                textposition: 'outside'
+            }];
+
+            Plotly.newPlot('aging-pie-chart', agingData, {
+                height: 300,
+                margin: {t: 0, b: 0, l: 0, r: 0},
+                showlegend: false
+            });
+
+            // Gráfico de barras - Top 5 proveedores
+            const topSuppliersData = [{
+                x: [9985.84, 9162.73, 8083.37, 7236.43, 6223.57],
+                y: ['MEGALABS VZL, C.A.', 'ADIUM LABORATORIOS, C.A.', 'LABORATORIOS SIEGFRIED S.A', 'CALOX INTERNATIONAL, C.A.', 'ASPEN REPRESENTACIONES, C.A.'],
+                type: 'bar',
+                orientation: 'h',
+                marker: {
+                    color: locatelColors[1]
+                }
+            }];
+
+            Plotly.newPlot('top-suppliers-chart', topSuppliersData, {
+                height: 300,
+                margin: {t: 20, b: 40, l: 200, r: 40},
+                xaxis: {title: 'Monto ($)'},
+                yaxis: {title: ''}
+            });
+        }
+
+        // Gráficos de Vencimientos
+        function renderAgingCharts() {
+            // Gráfico detallado por período
+            const agingDetailData = [
+                {
+                    x: ['Vencidas (+30 días)', 'Vencidas (1-30 días)', 'Por vencer (0-7 días)', 'Próximo (8-30 días)', 'Largo plazo (31+ días)'],
+                    y: [269, 399, 68, 51, 1],
+                    name: 'Cantidad de Facturas',
+                    type: 'bar',
+                    marker: {color: locatelColors[0]}
+                },
+                {
+                    x: ['Vencidas (+30 días)', 'Vencidas (1-30 días)', 'Por vencer (0-7 días)', 'Próximo (8-30 días)', 'Largo plazo (31+ días)'],
+                    y: [51947.56, 99070.74, 19133.84, 18719.91, 315.55],
+                    name: 'Monto ($)',
+                    type: 'bar',
+                    yaxis: 'y2',
+                    marker: {color: locatelColors[1]}
+                }
+            ];
+
+            Plotly.newPlot('aging-detail-chart', agingDetailData, {
+                height: 400,
+                xaxis: {title: 'Período de Vencimiento'},
+                yaxis: {title: 'Cantidad de Facturas', side: 'left'},
+                yaxis2: {title: 'Monto ($)', side: 'right', overlaying: 'y'}
+            });
+        }
+
+        // Gráficos de Proveedores
+        function renderSupplierCharts() {
+            // Distribución por proveedor (top 10 vs resto)
+            const supplierDistData = [{
+                values: [71649.40, 117538.20],
+                labels: ['Top 10 Proveedores', 'Otros Proveedores'],
+                type: 'pie',
+                marker: {
+                    colors: [locatelColors[1], locatelColors[3]]
+                }
+            }];
+
+            Plotly.newPlot('supplier-distribution-chart', supplierDistData, {
+                height: 300,
+                margin: {t: 0, b: 0, l: 0, r: 0}
+            });
+
+            // Concentración de pagos
+            const concentrationData = [{
+                x: ['Top 3', 'Top 5', 'Top 10', 'Todos'],
+                y: [14.3, 20.6, 37.9, 100],
+                type: 'bar',
+                marker: {color: locatelColors[2]}
+            }];
+
+            Plotly.newPlot('payment-concentration-chart', concentrationData, {
+                height: 300,
+                xaxis: {title: 'Grupo de Proveedores'},
+                yaxis: {title: 'Porcentaje Acumulado (%)'}
+            });
+        }
+
+        // Gráficos de Tendencias
+        function renderTrendCharts() {
+            // Distribución mensual de vencimientos
+            const monthlyData = [{
+                x: ['Ene 2025', 'Feb 2025', 'Mar 2025', 'Abr 2025', 'May 2025', 'Jun 2025', 'Jul 2025', 'Ago 2025', 'Sep 2025'],
+                y: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: {color: locatelColors[1], width: 3}
+            }];
+
+            Plotly.newPlot('monthly-trend-chart', monthlyData, {
+                height: 400,
+                xaxis: {title: 'Mes de Vencimiento'},
+                yaxis: {title: 'Número de Facturas'}
+            });
+
+            // Facturas por mes
+            const invoicesData = [{
+                x: ['Jun 2024', 'Jul 2024', 'Ago 2024', 'Sep 2024', 'Oct 2024', 'Nov 2024', 'Dic 2024', 'Ene 2025', 'Feb 2025', 'Mar 2025', 'Abr 2025', 'May 2025', 'Jun 2025', 'Jul 2025', 'Ago 2025'],
+                y: [1, 5, 12, 18, 25, 32, 45, 68, 89, 112, 145, 178, 201, 156, 89],
+                type: 'bar',
+                marker: {color: locatelColors[2]}
+            }];
+
+            Plotly.newPlot('monthly-invoices-chart', invoicesData, {
+                height: 300,
+                xaxis: {title: 'Mes'},
+                yaxis: {title: 'Cantidad de Facturas'}
+            });
+
+            // Días de crédito promedio
+            const creditDaysData = [{
+                x: ['Promedio General'],
+                y: [12.7],
+                type: 'bar',
+                marker: {color: locatelColors[4]}
+            }];
+
+            Plotly.newPlot('credit-days-chart', creditDaysData, {
+                height: 300,
+                xaxis: {title: 'Métrica'},
+                yaxis: {title: 'Días'}
+            });
+        }
+
+        // Gráficos de Prioridades
+        function renderPriorityCharts() {
+            // Matriz de prioridades
+            const priorityData = [{
+                x: ['Baja', 'Media', 'Alta'],
+                y: [315.55, 36691.82, 152180.23],
+                type: 'bar',
+                marker: {
+                    color: ['#7CC141', '#F79617', '#dc3545']
+                }
+            }];
+
+            Plotly.newPlot('priority-matrix-chart', priorityData, {
+                height: 400,
+                xaxis: {title: 'Nivel de Prioridad'},
+                yaxis: {title: 'Monto ($)'}
+            });
+        }
+
+        // Inicializar dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            renderOverviewCharts();
+        });
+    </script>
+</body>
+</html>
