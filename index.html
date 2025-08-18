@@ -246,6 +246,44 @@
         .update-info strong {
             color: #1976d2;
         }
+
+        .critical-trend {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .warning-trend {
+            color: #F79617;
+            font-weight: bold;
+        }
+
+        .critical-metric {
+            border-left-color: #dc3545;
+        }
+
+        .warning-metric {
+            border-left-color: #F79617;
+        }
+
+        .attention-badge {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .warning-badge {
+            background: linear-gradient(135deg, #F79617, #e68900);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body>
@@ -256,8 +294,9 @@
 
     <div class="container">
         <div class="update-info">
-            <strong>🔄 Última actualización:</strong> 14 de Agosto 2025 |
-            <strong>📊 Datos procesados:</strong> 709 facturas de 227 proveedores activos
+            <strong>🔄 Última actualización:</strong> 18 de Agosto 2025 |
+            <strong>📊 Datos procesados:</strong> 671 facturas de 226 proveedores |
+            <strong class="critical-trend">⚠️ Situación Crítica - Requiere Atención</strong>
         </div>
 
         <div class="nav-tabs">
@@ -271,35 +310,35 @@
         <!-- TAB: RESUMEN -->
         <div id="overview" class="tab-content active">
             <div class="metrics-grid">
-                <div class="metric-card">
+                <div class="metric-card critical-metric">
                     <h3>Total Facturas</h3>
-                    <div class="value">709</div>
-                    <div class="change">Facturas por pagar</div>
+                    <div class="value">671</div>
+                    <div class="change">Facturas por pagar <span class="attention-badge">Incremento significativo</span></div>
                 </div>
-                <div class="metric-card">
+                <div class="metric-card critical-metric">
                     <h3>Monto Total</h3>
-                    <div class="value">$147,297</div>
-                    <div class="change">Total por pagar</div>
+                    <div class="value">$139,633</div>
+                    <div class="change">Total por pagar <span class="attention-badge">Incremento crítico</span></div>
                 </div>
                 <div class="metric-card">
                     <h3>Proveedores Activos</h3>
-                    <div class="value">227</div>
-                    <div class="change">Proveedores únicos</div>
+                    <div class="value">226</div>
+                    <div class="change">Proveedores únicos <span class="warning-badge">+128 vs anterior</span></div>
                 </div>
                 <div class="metric-card">
                     <h3>Promedio por Factura</h3>
-                    <div class="value">$207.75</div>
-                    <div class="change">Monto promedio</div>
+                    <div class="value">$208.10</div>
+                    <div class="change">Monto promedio <span class="warning-badge">-$34.71 vs anterior</span></div>
                 </div>
-                <div class="metric-card">
-                    <h3>Días Promedio Vencimiento</h3>
-                    <div class="value">19.8</div>
-                    <div class="change">Días desde vencimiento</div>
+                <div class="metric-card warning-metric">
+                    <h3>Días Promedio Pago</h3>
+                    <div class="value warning-trend">19.9</div>
+                    <div class="change warning-trend">Gestión de pagos <span class="warning-badge">Requiere optimización</span></div>
                 </div>
-                <div class="metric-card">
+                <div class="metric-card critical-metric">
                     <h3>Facturas Vencidas</h3>
-                    <div class="value">599</div>
-                    <div class="change">84.5% del total</div>
+                    <div class="value critical-trend">559</div>
+                    <div class="change critical-trend">83.3% del total <span class="attention-badge">Situación crítica</span></div>
                 </div>
                 <div class="metric-card">
                     <h3>Ventas Mes Anterior</h3>
@@ -307,9 +346,9 @@
                     <div class="change">Julio 2025</div>
                 </div>
                 <div class="metric-card">
-                    <h3>Valoración Inventario</h3>
-                    <div class="value">$298,711</div>
-                    <div class="change">Al 31 de Julio 2025</div>
+                    <h3>Ratio CxP vs Ventas</h3>
+                    <div class="value">47.2%</div>
+                    <div class="change">Indicador financiero <span class="attention-badge">Muy elevado</span></div>
                 </div>
             </div>
 
@@ -325,18 +364,18 @@
             </div>
 
             <div class="alert-section">
-                <div class="alert-title">Alertas Críticas de Pagos</div>
+                <div class="alert-title">Situación Financiera - Requiere Atención Inmediata</div>
                 <div class="alert-item">
-                    <strong>599 facturas vencidas</strong> por un total de <strong>$118,089.10</strong> requieren pago inmediato
+                    <strong>Situación Crítica:</strong> 559 facturas vencidas (83.3%) por $109,989.22 - <span class="critical-trend">Requiere acción inmediata</span>
                 </div>
                 <div class="alert-item">
-                    <strong>Top 5 proveedores</strong> concentran el 19.0% del total por pagar ($27,995.37)
+                    <strong>Flujo de Caja Comprometido:</strong> Solo 14.6% de facturas por vencer ($25,457.90) - <span class="critical-trend">Presión de liquidez</span>
                 </div>
                 <div class="alert-item">
-                    <strong>Ratio Cuentas por Pagar vs Ventas:</strong> 49.8% - Las cuentas por pagar representan la mitad de las ventas del mes anterior
+                    <strong>Ratio Elevado:</strong> 47.2% vs ventas mensuales - <span class="critical-trend">Muy por encima del estándar (15-20%)</span>
                 </div>
                 <div class="alert-item">
-                    <strong>Cobertura de Inventario:</strong> El inventario actual ($298,711) cubre 2.03x el total de cuentas por pagar
+                    <strong>Concentración de Riesgo:</strong> 226 proveedores activos con alta morosidad - <span class="warning-trend">Diversificar y negociar plazos</span>
                 </div>
             </div>
         </div>
@@ -344,25 +383,25 @@
         <!-- TAB: VENCIMIENTOS -->
         <div id="aging" class="tab-content">
             <div class="metrics-grid">
-                <div class="metric-card">
+                <div class="metric-card warning-metric">
                     <h3>Por Vencer</h3>
-                    <div class="value">$29,208</div>
-                    <div class="change">110 facturas (15.5%)</div>
+                    <div class="value warning-trend">$25,458</div>
+                    <div class="change warning-trend">98 facturas (14.6%) <span class="warning-badge">Muy bajo</span></div>
                 </div>
-                <div class="metric-card risk-medium">
+                <div class="metric-card critical-metric">
                     <h3>Vencida (0-30 días)</h3>
-                    <div class="value">$80,091</div>
-                    <div class="change">384 facturas (54.2%)</div>
+                    <div class="value critical-trend">$76,375</div>
+                    <div class="change critical-trend">370 facturas (55.1%) <span class="attention-badge">Crítico</span></div>
                 </div>
-                <div class="metric-card risk-high">
+                <div class="metric-card critical-metric">
                     <h3>Vencida (31-60 días)</h3>
-                    <div class="value">$31,507</div>
-                    <div class="change">190 facturas (26.8%)</div>
+                    <div class="value critical-trend">$31,837</div>
+                    <div class="change critical-trend">185 facturas (27.6%) <span class="attention-badge">Muy alto</span></div>
                 </div>
-                <div class="metric-card risk-high">
-                    <h3>Vencida (61-90 días)</h3>
-                    <div class="value">$6,491</div>
-                    <div class="change">25 facturas (3.5%)</div>
+                <div class="metric-card critical-metric">
+                    <h3>Vencida (61+ días)</h3>
+                    <div class="value critical-trend">$5,963</div>
+                    <div class="change critical-trend">18 facturas (2.7%) <span class="attention-badge">Riesgo legal</span></div>
                 </div>
             </div>
 
@@ -372,15 +411,18 @@
             </div>
 
             <div class="alert-section">
-                <div class="alert-title">Situación de Pagos</div>
+                <div class="alert-title">Situación de Pagos - Crítica</div>
                 <div class="alert-item">
-                    <strong>Situación Mejorada:</strong> 84.5% de las facturas están vencidas ($118,089.10) - Reducción vs período anterior
+                    <strong>Morosidad Extrema:</strong> <span class="critical-trend">83.3% de facturas vencidas</span> - Situación insostenible
                 </div>
                 <div class="alert-item">
-                    <strong>Prioridad Alta:</strong> 215 facturas con más de 30 días requieren pago urgente
+                    <strong>Concentración Crítica:</strong> $76,375 vencidas 0-30 días (55.1%) - <span class="critical-trend">Requiere pago inmediato</span>
                 </div>
                 <div class="alert-item">
-                    <strong>Gestión Positiva:</strong> 15.5% de facturas están por vencer - Mejora en la gestión
+                    <strong>Riesgo Legal:</strong> $5,963 con más de 60 días vencidas - <span class="critical-trend">Posibles acciones legales</span>
+                </div>
+                <div class="alert-item">
+                    <strong>Liquidez Comprometida:</strong> Solo $25,458 por vencer - <span class="critical-trend">Planificación de flujo urgente</span>
                 </div>
             </div>
         </div>
@@ -390,48 +432,48 @@
             <div class="chart-container">
                 <div class="chart-title">Top 10 Proveedores por Monto Pendiente</div>
                 <div style="text-align: center; font-size: 0.9em; color: #666; margin-bottom: 15px; font-style: italic;">
-                    (*) Los valores incluyen facturas por vencer y vencidas
+                    (*) Los valores incluyen facturas por vencer y vencidas - Actualización 18 de Agosto
                 </div>
                 <div class="supplier-list">
                     <div class="supplier-item">
-                        <div class="supplier-name">1. MEGALABS VZL, C.A.</div>
-                        <div class="supplier-amount">$7,320.17</div>
+                        <div class="supplier-name">1. LABORATORIOS SIEGFRIED S.A</div>
+                        <div class="supplier-amount">$7,419.42</div>
                     </div>
                     <div class="supplier-item">
-                        <div class="supplier-name">2. LABORATORIOS SIEGFRIED S.A</div>
-                        <div class="supplier-amount">$7,078.17</div>
+                        <div class="supplier-name">2. MEGALABS VZL, C.A.</div>
+                        <div class="supplier-amount">$6,843.75</div>
                     </div>
                     <div class="supplier-item">
                         <div class="supplier-name">3. AVPHARMA, C.A.</div>
-                        <div class="supplier-amount">$6,055.07</div>
+                        <div class="supplier-amount">$6,008.72</div>
                     </div>
                     <div class="supplier-item">
                         <div class="supplier-name">4. GALAXIA MEDICA, C.A.</div>
-                        <div class="supplier-amount">$3,934.27</div>
+                        <div class="supplier-amount">$4,588.84</div>
                     </div>
                     <div class="supplier-item">
-                        <div class="supplier-name">5. NESTLE VENEZUELA, S.A.</div>
-                        <div class="supplier-amount">$3,766.68</div>
-                    </div>
-                    <div class="supplier-item">
-                        <div class="supplier-name">6. ADIUM LABORATORIOS, C.A.</div>
+                        <div class="supplier-name">5. ADIUM LABORATORIOS, C.A.</div>
                         <div class="supplier-amount">$3,441.68</div>
                     </div>
                     <div class="supplier-item">
-                        <div class="supplier-name">7. BIMBO DE VENEZUELA, C.A.</div>
-                        <div class="supplier-amount">$3,433.08</div>
+                        <div class="supplier-name">6. DOLLY FARMA C.A.</div>
+                        <div class="supplier-amount">$3,399.95</div>
                     </div>
                     <div class="supplier-item">
-                        <div class="supplier-name">8. DISTRIBUIDORA DE COMPONENTES</div>
-                        <div class="supplier-amount">$3,328.01</div>
+                        <div class="supplier-name">7. CASA REPRESENTACION DISTRILAB,C.A</div>
+                        <div class="supplier-amount">$2,833.54</div>
                     </div>
                     <div class="supplier-item">
-                        <div class="supplier-name">9. DROGUERIA NENA, C.A.</div>
-                        <div class="supplier-amount">$3,228.59</div>
+                        <div class="supplier-name">8. ALIMENTOS POLAR COMERCIAL, C.A.</div>
+                        <div class="supplier-amount">$2,810.04</div>
                     </div>
                     <div class="supplier-item">
-                        <div class="supplier-name">10. CASA DE REPRESENTACIÓN ARO, S.A.</div>
-                        <div class="supplier-amount">$2,996.79</div>
+                        <div class="supplier-name">9. BIMBO DE VENEZUELA, C.A.</div>
+                        <div class="supplier-amount">$2,804.01</div>
+                    </div>
+                    <div class="supplier-item">
+                        <div class="supplier-name">10. ESPECIALIDADES DOLLDER, C.A.</div>
+                        <div class="supplier-amount">$2,727.22</div>
                     </div>
                 </div>
             </div>
@@ -461,7 +503,7 @@
                     <div id="monthly-distribution-chart"></div>
                 </div>
                 <div class="chart-container">
-                    <div class="chart-title">Promedio de Días de Vencimiento</div>
+                    <div class="chart-title">Promedio de Días de Pago</div>
                     <div id="payment-days-chart"></div>
                 </div>
             </div>
@@ -470,20 +512,20 @@
         <!-- TAB: GESTIÓN DE RIESGO -->
         <div id="risk" class="tab-content">
             <div class="metrics-grid">
-                <div class="metric-card risk-high">
+                <div class="metric-card critical-metric">
                     <h3>Riesgo Alto</h3>
-                    <div class="value">$1,653</div>
-                    <div class="change">2 facturas</div>
+                    <div class="value critical-trend">$1,503</div>
+                    <div class="change critical-trend">2 facturas <span class="attention-badge">Acción inmediata</span></div>
                 </div>
-                <div class="metric-card risk-medium">
+                <div class="metric-card critical-metric">
                     <h3>Riesgo Medio</h3>
-                    <div class="value">$124,921</div>
-                    <div class="change">408 facturas</div>
+                    <div class="value critical-trend">$119,341</div>
+                    <div class="change critical-trend">388 facturas <span class="attention-badge">85.5% del total</span></div>
                 </div>
-                <div class="metric-card risk-low">
+                <div class="metric-card warning-metric">
                     <h3>Riesgo Bajo</h3>
-                    <div class="value">$20,722</div>
-                    <div class="change">299 facturas</div>
+                    <div class="value warning-trend">$18,789</div>
+                    <div class="change warning-trend">281 facturas <span class="warning-badge">Solo 13.5%</span></div>
                 </div>
             </div>
 
@@ -493,18 +535,18 @@
             </div>
 
             <div class="alert-section">
-                <div class="alert-title">Plan de Acción de Pagos</div>
+                <div class="alert-title">Gestión de Riesgo - Situación Crítica</div>
                 <div class="alert-item">
-                    <strong>Prioridad 1:</strong> Pagar inmediatamente 2 facturas de alto riesgo ($1,653) - Más de 120 días
+                    <strong>Riesgo Extremo:</strong> <span class="critical-trend">$1,503 en riesgo alto</span> - Requiere pago inmediato para evitar acciones legales
                 </div>
                 <div class="alert-item">
-                    <strong>Prioridad 2:</strong> Gestionar 408 facturas de riesgo medio ($124,921) - Negociar plazos
+                    <strong>Cartera Comprometida:</strong> 85.5% de facturas en riesgo medio ($119,341) - <span class="critical-trend">Situación insostenible</span>
                 </div>
                 <div class="alert-item">
-                    <strong>Seguimiento:</strong> Monitorear 299 facturas de bajo riesgo para evitar vencimientos
+                    <strong>Liquidez Crítica:</strong> Solo 13.5% de facturas de bajo riesgo - <span class="critical-trend">Flujo de caja comprometido</span>
                 </div>
                 <div class="alert-item">
-                    <strong>Estrategia:</strong> Implementar calendario de pagos automático para optimizar flujo de caja
+                    <strong>Acción Requerida:</strong> Negociación urgente de plazos y reestructuración de pagos - <span class="critical-trend">Plan de contingencia necesario</span>
                 </div>
             </div>
         </div>
@@ -549,16 +591,17 @@
 
         // Colores de Locatel
         const locatelColors = ['#FED519', '#F79617', '#7CC141', '#419E46', '#0A9561'];
+        const riskColors = ['#dc3545', '#F79617', '#7CC141'];
 
         // Gráficos del Overview
         function renderOverviewCharts() {
             // Gráfico de torta - Estado de vencimiento
             const agingData = [{
-                values: [29207.65, 80090.99, 31506.72, 6491.39],
-                labels: ['Por vencer', 'Vencida (0-30 días)', 'Vencida (31-60 días)', 'Vencida (61-90 días)'],
+                values: [25457.90, 76375.32, 31836.88, 5962.92],
+                labels: ['Por vencer', 'Vencida (0-30 días)', 'Vencida (31-60 días)', 'Vencida (61+ días)'],
                 type: 'pie',
                 marker: {
-                    colors: ['#419E46', '#F79617', '#ff6b6b', '#dc3545']
+                    colors: ['#7CC141', '#F79617', '#ff6b6b', '#dc3545']
                 },
                 textinfo: 'label+percent',
                 textposition: 'outside'
@@ -572,8 +615,8 @@
 
             // Gráfico de barras - Top 5 proveedores
             const topSuppliersData = [{
-                x: [7320.17, 7078.17, 6055.07, 3934.27, 3766.68],
-                y: ['MEGALABS VZL, C.A.', 'LABORATORIOS SIEGFRIED S.A', 'AVPHARMA, C.A.', 'GALAXIA MEDICA, C.A.', 'NESTLE VENEZUELA, S.A.'],
+                x: [7419.42, 6843.75, 6008.72, 4588.84, 3441.68],
+                y: ['LABORATORIOS SIEGFRIED S.A', 'MEGALABS VZL, C.A.', 'AVPHARMA, C.A.', 'GALAXIA MEDICA, C.A.', 'ADIUM LABORATORIOS, C.A.'],
                 type: 'bar',
                 orientation: 'h',
                 marker: {
@@ -594,15 +637,15 @@
             // Gráfico detallado por período
             const agingDetailData = [
                 {
-                    x: ['Por vencer', 'Vencida (0-30)', 'Vencida (31-60)', 'Vencida (61-90)'],
-                    y: [110, 384, 190, 25],
+                    x: ['Por vencer', 'Vencida (0-30)', 'Vencida (31-60)', 'Vencida (61+)'],
+                    y: [98, 370, 185, 18],
                     name: 'Cantidad de Facturas',
                     type: 'bar',
                     marker: {color: locatelColors[0]}
                 },
                 {
-                    x: ['Por vencer', 'Vencida (0-30)', 'Vencida (31-60)', 'Vencida (61-90)'],
-                    y: [29207.65, 80090.99, 31506.72, 6491.39],
+                    x: ['Por vencer', 'Vencida (0-30)', 'Vencida (31-60)', 'Vencida (61+)'],
+                    y: [25457.90, 76375.32, 31836.88, 5962.92],
                     name: 'Monto ($)',
                     type: 'bar',
                     yaxis: 'y2',
@@ -622,7 +665,7 @@
         function renderSupplierCharts() {
             // Distribución por proveedor (top 10 vs resto)
             const supplierDistData = [{
-                values: [44582.51, 102714.24],
+                values: [42477.13, 97155.89],
                 labels: ['Top 10 Proveedores', 'Otros Proveedores'],
                 type: 'pie',
                 marker: {
@@ -638,7 +681,7 @@
             // Concentración de pagos
             const concentrationData = [{
                 x: ['Top 3', 'Top 5', 'Top 10', 'Todos'],
-                y: [13.7, 19.0, 30.3, 100],
+                y: [14.5, 19.9, 30.4, 100],
                 type: 'bar',
                 marker: {color: locatelColors[2]}
             }];
@@ -655,7 +698,7 @@
             // Evolución mensual
             const monthlyData = [{
                 x: ['Jun 2025', 'Jul 2025', 'Ago 2025'],
-                y: [120, 350, 239],
+                y: [150, 280, 241],
                 type: 'scatter',
                 mode: 'lines+markers',
                 line: {color: locatelColors[1], width: 3}
@@ -670,7 +713,7 @@
             // Distribución mensual
             const monthlyDistData = [{
                 x: ['Jun', 'Jul', 'Ago'],
-                y: [120, 350, 239],
+                y: [150, 280, 241],
                 type: 'bar',
                 marker: {color: locatelColors[2]}
             }];
@@ -681,10 +724,10 @@
                 yaxis: {title: 'Cantidad de Facturas'}
             });
 
-            // Días de vencimiento promedio
+            // Días de pago promedio
             const paymentDaysData = [{
                 x: ['Promedio General'],
-                y: [19.8],
+                y: [19.9],
                 type: 'bar',
                 marker: {color: locatelColors[4]}
             }];
@@ -692,7 +735,7 @@
             Plotly.newPlot('payment-days-chart', paymentDaysData, {
                 height: 300,
                 xaxis: {title: 'Métrica'},
-                yaxis: {title: 'Días desde Vencimiento'}
+                yaxis: {title: 'Días de Pago'}
             });
         }
 
@@ -701,10 +744,10 @@
             // Matriz de riesgo
             const riskData = [{
                 x: ['Bajo', 'Medio', 'Alto'],
-                y: [20722.30, 124921.49, 1652.96],
+                y: [18789.16, 119340.66, 1503.20],
                 type: 'bar',
                 marker: {
-                    color: ['#7CC141', '#F79617', '#dc3545']
+                    color: riskColors
                 }
             }];
 
