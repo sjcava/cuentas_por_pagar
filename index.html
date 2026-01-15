@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Análisis Cuentas por Pagar - Plan Multi-Día $10K</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            /* Paleta Corporativa */
+            --corp-yellow: #FED519;
+            --corp-orange: #F79617;
+            --corp-green-light: #7CC141;
+            --corp-green-medium: #419E46;
+            --corp-green-dark: #0A9561;
+            
+            /* Neutrales Corporativos */
+            --corp-white: #FEFEFE;
+            --corp-gray-50: #FAFBFC;
+            --corp-gray-100: #F4F6F8;
+            --corp-gray-200: #E4E7EB;
+            --corp-gray-300: #D1D5DB;
+            --corp-gray-700: #374151;
+            --corp-gray-800: #1F2937;
+            --corp-gray-900: #111827;
+            
+            /* Sombras Corporativas */
+            --shadow-sm: 0 1px 2px 0 rgba(10, 149, 97, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(10, 149, 97, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(10, 149, 97, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(10, 149, 97, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--corp-gray-50) 0%, var(--corp-white) 100%);
+            color: var(--corp-gray-800);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--corp-green-dark) 0%, var(--corp-green-medium) 50%, var(--corp-green-light) 100%);
+            color: white;
+            padding: 3rem 2.5rem;
+            border-radius: 20px;
+            margin-bottom: 2.5rem;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(254, 213, 25, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-weight: 800;
+            font-size: 2.75rem;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.025em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header .subtitle {
+            font-size: 1.125rem;
+            opacity: 0.95;
+            font-weight: 400;
+            letter-spacing: 0.025em;
+        }
+
+        .success-banner {
+            background: linear-gradient(135deg, var(--corp-green-light) 0%, var(--corp-green-medium) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background: var(--corp-white);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border-left: 5px solid var(--corp-green-medium);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, transparent 0%, rgba(124, 193, 65, 0.05) 100%);
+            border-radius: 0 16px 0 60px;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .metric-card.success {
+            border-left-color: var(--corp-green-light);
+            background: linear-gradient(135deg, var(--corp-white) 0%, rgba(124, 193, 65, 0.02) 100%);
+        }
+
+        .metric-card.warning {
+            border-left-color: var(--corp-orange);
+            background: linear-gradient(135deg, var(--corp-white) 0%, rgba(247, 150, 23, 0.02) 100%);
+        }
+
+        .metric-card.alert {
+            border-left-color: var(--corp-yellow);
+            background: linear-gradient(135deg, var(--corp-white) 0%, rgba(254, 213, 25, 0.02) 100%);
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--corp-gray-700);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--corp-gray-900);
+            margin-bottom: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .metric-subtitle {
+            font-size: 0.875rem;
+            color: var(--corp-gray-700);
+            font-weight: 500;
+        }
+
+        .success-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--corp-green-light) 0%, var(--corp-green-medium) 100%);
+            color: white;
+            padding: 0.375rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            background: var(--corp-white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid var(--corp-gray-100);
+        }
+
+        .section-header {
+            background: linear-gradient(90deg, var(--corp-green-dark) 0%, var(--corp-green-medium) 100%);
+            color: white;
+            padding: 1.75rem 2rem;
+        }
+
+        .section-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.025em;
+        }
+
+        .section-content {
+            padding: 2rem;
+        }
+
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .payment-table th {
+            background: linear-gradient(135deg, var(--corp-gray-50) 0%, var(--corp-gray-100) 100%);
+            padding: 1.25rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: var(--corp-gray-700);
+            border-bottom: 2px solid var(--corp-green-medium);
+        }
+
+        .payment-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--corp-gray-200);
+        }
+
+        .payment-table tr:hover {
+            background: linear-gradient(135deg, rgba(124, 193, 65, 0.02) 0%, rgba(10, 149, 97, 0.02) 100%);
+        }
+
+        .provider-name {
+            font-weight: 600;
+            color: var(--corp-gray-900);
+        }
+
+        .critical-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: linear-gradient(135deg, var(--corp-yellow) 0%, var(--corp-orange) 100%);
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            animation: pulse-corporate 2s infinite;
+            box-shadow: 0 0 0 0 rgba(254, 213, 25, 0.7);
+        }
+
+        @keyframes pulse-corporate {
+            0% {
+                box-shadow: 0 0 0 0 rgba(254, 213, 25, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(254, 213, 25, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(254, 213, 25, 0);
+            }
+        }
+
+        .amount {
+            font-weight: 700;
+            color: var(--corp-green-dark);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .day-badge {
+            padding: 0.375rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .day-1 { 
+            background: linear-gradient(135deg, var(--corp-orange) 0%, var(--corp-yellow) 100%); 
+            color: var(--corp-gray-900); 
+        }
+        .day-2 { 
+            background: var(--corp-orange); 
+            color: white; 
+        }
+        .day-3 { 
+            background: var(--corp-green-medium); 
+            color: white; 
+        }
+        .day-4 { 
+            background: var(--corp-green-light); 
+            color: var(--corp-gray-900); 
+        }
+        .day-5 { 
+            background: var(--corp-green-light); 
+            color: var(--corp-gray-900); 
+        }
+        .day-6 { 
+            background: var(--corp-green-light); 
+            color: var(--corp-gray-900); 
+        }
+        .day-7 { 
+            background: var(--corp-gray-200); 
+            color: var(--corp-gray-700); 
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--corp-white);
+            border: 2px solid var(--corp-green-medium);
+            color: var(--corp-green-medium);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--corp-green-medium) 0%, var(--corp-green-light) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .filter-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .filter-btn.active::before,
+        .filter-btn:hover::before {
+            opacity: 1;
+        }
+
+        .score-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .score-high { 
+            background: linear-gradient(135deg, var(--corp-yellow) 0%, var(--corp-orange) 100%); 
+            color: var(--corp-gray-900); 
+        }
+        .score-medium { 
+            background: var(--corp-green-medium); 
+            color: white; 
+        }
+        .score-low { 
+            background: var(--corp-gray-300); 
+            color: var(--corp-gray-700); 
+        }
+
+        .timeline-section {
+            margin-bottom: 2rem;
+        }
+
+        .timeline-item {
+            background: var(--corp-white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--corp-green-medium);
+        }
+
+        .timeline-day {
+            font-weight: 700;
+            color: var(--corp-gray-900);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-details {
+            font-size: 0.9rem;
+            color: var(--corp-gray-700);
+        }
+
+        .animation-container {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .metric-card:nth-child(1) { animation-delay: 0.1s; }
+        .metric-card:nth-child(2) { animation-delay: 0.2s; }
+        .metric-card:nth-child(3) { animation-delay: 0.3s; }
+        .metric-card:nth-child(4) { animation-delay: 0.4s; }
+        .metric-card:nth-child(5) { animation-delay: 0.5s; }
+        .metric-card:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header Corporativo -->
+        <div class="header animation-container">
+            <div class="header-content">
+                <h1>📊 Análisis Cuentas por Pagar</h1>
+                <p class="subtitle">Plan Multi-Día | Cash Flow $10K Diario | 14 Enero 2026</p>
+            </div>
+        </div>
+
+        <!-- Banner de Éxito -->
+        <div class="success-banner animation-container">
+            ✅ SITUACIÓN MANEJABLE: Todos los proveedores críticos se pueden pagar en 7 días con $10K diarios
+        </div>
+
+        <!-- Métricas Principales -->
+        <div class="metrics-grid">
+            <div class="metric-card animation-container success">
+                <div class="metric-label">Facturas Críticas DÍA 1</div>
+                <div class="metric-value">4</div>
+                <div class="metric-subtitle">Monto: $9,565.48 (95.7% utilización)</div>
+            </div>
+
+            <div class="metric-card animation-container warning">
+                <div class="metric-label">Total Proveedores Críticos</div>
+                <div class="metric-value">99 <span class="success-badge">Factible</span></div>
+                <div class="metric-subtitle">Nivel 4 - Se pagan en 7 días</div>
+            </div>
+
+            <div class="metric-card animation-container success">
+                <div class="metric-label">Monto Total Críticos</div>
+                <div class="metric-value">$63K</div>
+                <div class="metric-subtitle">$63,367.71 total - Sin financiamiento</div>
+            </div>
+
+            <div class="metric-card animation-container">
+                <div class="metric-label">Cash Flow Diario</div>
+                <div class="metric-value">$10K</div>
+                <div class="metric-subtitle">Recurrente - Suficiente para el plan</div>
+            </div>
+
+            <div class="metric-card animation-container alert">
+                <div class="metric-label">Días para Críticos</div>
+                <div class="metric-value">7</div>
+                <div class="metric-subtitle">Completar todos los nivel 4</div>
+            </div>
+
+            <div class="metric-card animation-container success">
+                <div class="metric-label">Timeline Total</div>
+                <div class="metric-value">16</div>
+                <div class="metric-subtitle">Días para todas las 507 facturas</div>
+            </div>
+        </div>
+
+        <!-- Timeline de 7 Días -->
+        <div class="timeline-section animation-container">
+            <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--corp-gray-900);">📅 Cronograma Proveedores Críticos (7 días)</h2>
+            
+            <div class="timeline-item">
+                <div class="timeline-day">🔥 DÍA 1 (HOY) - $9,565.48</div>
+                <div class="timeline-details">4 facturas: COLGATE PALMOLIVE ($3,440), MEGALABS VZL (2 facturas), CALOX ($1,740)</div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-day">⚡ DÍA 2 - $9,626.87</div>
+                <div class="timeline-details">6 facturas: CALOX (3), MEGALABS (1), BIOTECH (1), NESTLE (1)</div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-day">⚡ DÍA 3 - $9,455.96</div>
+                <div class="timeline-details">8 facturas: LABORATORIOS VALMOR (2), MEGALABS (4), CALOX (2)</div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-day">⚡ DÍA 4 - $9,198.72</div>
+                <div class="timeline-details">10 facturas: ASPEN, MEGALABS (4), CALOX (3), LABORATORIOS VALMOR (1)</div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-day">⚡ DÍA 5 - $9,884.97 (Día Intensivo)</div>
+                <div class="timeline-details">18 facturas: LABORATORIOS SIEGFRIED (7), ADIUM (3), ASPEN, DIMASSI</div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-day">⚡ DÍA 6 - $9,741.93</div>
+                <div class="timeline-details">21 facturas: AVPHARMA (11), PEPSI-COLA (2), INVERSIONES BALASTEX</div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-day">🏁 DÍA 7 - $5,893.78 (Finalización)</div>
+                <div class="timeline-details">32 facturas finales: CASA ARO (8), AVPHARMA restante (11), completar críticos</div>
+            </div>
+        </div>
+
+        <!-- Contenido Principal -->
+        <div class="content-grid">
+            <!-- Tabla de Pagos DÍA 1 -->
+            <div class="section animation-container">
+                <div class="section-header">
+                    <h2 class="section-title">🔥 Pagos Críticos DÍA 1 (HOY)</h2>
+                </div>
+                <div class="section-content">
+                    <div style="overflow-x: auto;">
+                        <table class="payment-table" id="paymentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Proveedor</th>
+                                    <th>Factura</th>
+                                    <th>Monto</th>
+                                    <th>Score</th>
+                                    <th>Día</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsTableBody">
+                                <!-- Datos del día 1 -->
+                                <tr>
+                                    <td>
+                                        <span class="critical-indicator"></span>
+                                        <span class="provider-name">COLGATE PALMOLIVE, C.A.</span>
+                                    </td>
+                                    <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">3210565135</td>
+                                    <td class="amount">$3,440.00</td>
+                                    <td>
+                                        <span class="score-indicator score-high">98.0</span>
+                                    </td>
+                                    <td>
+                                        <span class="day-badge day-1">DÍA 1</span>
+                                    </td>
+                                    <td style="font-size: 0.8rem; font-weight: 600; color: var(--corp-gray-700);">
+                                        PAGAR HOY
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="critical-indicator"></span>
+                                        <span class="provider-name">MEGALABS VZL, C.A.</span>
+                                    </td>
+                                    <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">393007</td>
+                                    <td class="amount">$2,558.93</td>
+                                    <td>
+                                        <span class="score-indicator score-high">97.4</span>
+                                    </td>
+                                    <td>
+                                        <span class="day-badge day-1">DÍA 1</span>
+                                    </td>
+                                    <td style="font-size: 0.8rem; font-weight: 600; color: var(--corp-gray-700);">
+                                        PAGAR HOY
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="critical-indicator"></span>
+                                        <span class="provider-name">MEGALABS VZL, C.A.</span>
+                                    </td>
+                                    <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">392754</td>
+                                    <td class="amount">$1,825.77</td>
+                                    <td>
+                                        <span class="score-indicator score-high">95.3</span>
+                                    </td>
+                                    <td>
+                                        <span class="day-badge day-1">DÍA 1</span>
+                                    </td>
+                                    <td style="font-size: 0.8rem; font-weight: 600; color: var(--corp-gray-700);">
+                                        PAGAR HOY
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="critical-indicator"></span>
+                                        <span class="provider-name">CALOX INTERNATIONAL, C.A.</span>
+                                    </td>
+                                    <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">65002467</td>
+                                    <td class="amount">$1,740.78</td>
+                                    <td>
+                                        <span class="score-indicator score-high">95.1</span>
+                                    </td>
+                                    <td>
+                                        <span class="day-badge day-1">DÍA 1</span>
+                                    </td>
+                                    <td style="font-size: 0.8rem; font-weight: 600; color: var(--corp-gray-700);">
+                                        PAGAR HOY
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="margin-top: 1rem; padding: 1rem; background: var(--corp-green-light); color: white; border-radius: 8px; text-align: center; font-weight: 600;">
+                            💰 TOTAL DÍA 1: $9,565.48 | 📈 UTILIZACIÓN: 95.7%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Análisis -->
+            <div>
+                <!-- Distribución por Días -->
+                <div class="section animation-container" style="margin-bottom: 1.5rem;">
+                    <div class="section-header">
+                        <h2 class="section-title">📊 Distribución por Días</h2>
+                    </div>
+                    <div class="section-content">
+                        <div class="chart-container">
+                            <canvas id="daysChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Proveedores Críticos -->
+                <div class="section animation-container">
+                    <div class="section-header">
+                        <h2 class="section-title">🎯 Top Proveedores Críticos</h2>
+                    </div>
+                    <div class="section-content" id="criticalProviders">
+                        <div style="margin-bottom: 1rem; padding: 1.25rem; background: linear-gradient(135deg, rgba(247, 150, 23, 0.08) 0%, rgba(254, 213, 25, 0.05) 100%); border-radius: 12px; border-left: 4px solid var(--corp-orange); box-shadow: var(--shadow-sm);">
+                            <div style="font-weight: 700; color: var(--corp-gray-900); margin-bottom: 0.5rem; font-size: 0.95rem;">
+                                🔴 MEGALABS VZL, C.A.
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--corp-gray-700); margin-bottom: 0.25rem;">
+                                11 facturas | ~$12,000 | Días 1-4
+                            </div>
+                            <div style="font-size: 0.75rem; font-weight: 600; margin-top: 0.5rem;">
+                                <span class="day-badge day-1" style="font-size: 0.7rem;">
+                                    PRIORIDAD #1
+                                </span>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 1rem; padding: 1.25rem; background: linear-gradient(135deg, rgba(247, 150, 23, 0.08) 0%, rgba(254, 213, 25, 0.05) 100%); border-radius: 12px; border-left: 4px solid var(--corp-orange); box-shadow: var(--shadow-sm);">
+                            <div style="font-weight: 700; color: var(--corp-gray-900); margin-bottom: 0.5rem; font-size: 0.95rem;">
+                                🔴 CALOX INTERNATIONAL, C.A.
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--corp-gray-700); margin-bottom: 0.25rem;">
+                                8 facturas | ~$8,800 | Días 1-4
+                            </div>
+                            <div style="font-size: 0.75rem; font-weight: 600; margin-top: 0.5rem;">
+                                <span class="day-badge day-2" style="font-size: 0.7rem;">
+                                    PRIORIDAD #2
+                                </span>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 1rem; padding: 1.25rem; background: linear-gradient(135deg, rgba(247, 150, 23, 0.08) 0%, rgba(254, 213, 25, 0.05) 100%); border-radius: 12px; border-left: 4px solid var(--corp-orange); box-shadow: var(--shadow-sm);">
+                            <div style="font-weight: 700; color: var(--corp-gray-900); margin-bottom: 0.5rem; font-size: 0.95rem;">
+                                🔴 AVPHARMA, C.A.
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--corp-gray-700); margin-bottom: 0.25rem;">
+                                18 facturas | ~$6,500 | Días 5-7
+                            </div>
+                            <div style="font-size: 0.75rem; font-weight: 600; margin-top: 0.5rem;">
+                                <span class="day-badge day-6" style="font-size: 0.7rem;">
+                                    DÍAS 5-7
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Crear gráfico de distribución por días
+        function createDaysChart() {
+            const ctx = document.getElementById('daysChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Día 1', 'Día 2', 'Día 3', 'Día 4', 'Día 5', 'Día 6', 'Día 7'],
+                    datasets: [
+                        {
+                            label: 'Monto ($)',
+                            data: [9565, 9627, 9456, 9199, 9885, 9742, 5894],
+                            backgroundColor: [
+                                '#F79617', // Naranja
+                                '#FED519', // Amarillo  
+                                '#419E46', // Verde medio
+                                '#7CC141', // Verde claro
+                                '#7CC141', // Verde claro
+                                '#7CC141', // Verde claro
+                                '#D1D5DB'  // Gris
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#FFFFFF'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10000,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value/1000).toFixed(0) + 'K';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                            titleColor: '#FFFFFF',
+                            bodyColor: '#FFFFFF',
+                            borderColor: '#0A9561',
+                            borderWidth: 2,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return '$' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        // Inicializar dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                createDaysChart();
+            }, 1200);
+        });
+
+        // Animaciones de entrada escalonadas
+        const animElements = document.querySelectorAll('.animation-container');
+        animElements.forEach((el, index) => {
+            el.style.animationDelay = `${index * 0.15}s`;
+        });
+    </script>
+</body>
+</html>
